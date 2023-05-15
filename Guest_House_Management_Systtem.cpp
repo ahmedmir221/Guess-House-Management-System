@@ -98,3 +98,103 @@ public:
         this->room = room;
         this->guest = guest;
         this->duration = duration;
+        }
+
+    Room* getRoom() const
+    {
+        return room;
+    }
+
+    Guest* getGuest() const
+    {
+        return guest;
+    }
+
+    int getDuration() const
+    {
+        return duration;
+    }
+
+    friend ostream &operator<<(ostream &os, const Reservation &reservation)
+    {
+        os << *reservation.getGuest() << " reserved " << *reservation.getRoom() << " for " << reservation.getDuration() << " days";
+        return os;
+    }
+};
+
+class GuestHouse
+{
+private:
+    vector<Room*> rooms;
+    vector<Reservation*> reservations;
+
+public:
+    GuestHouse()
+    {
+        for (int i = 1; i <= 10; i++)
+        {
+            rooms.push_back(new Room(i, 2));
+        }
+    }
+
+    ~GuestHouse()
+    {
+        for (auto room : rooms)
+        {
+            delete room;
+        }
+        for (auto reservation : reservations)
+        {
+            delete reservation;
+        }
+    }
+
+    void showRooms() const
+    {
+        cout << "Rooms:" << endl;
+        for (auto room : rooms)
+        {
+            cout << *room << endl;
+        }
+    }
+
+    void showReservations() const
+    {
+        cout << "Reservations:" << endl;
+        for (auto reservation : reservations)
+        {
+            cout << *reservation << endl;
+        }
+    }
+
+    bool isRoomAvailable(int number) const
+    {
+        for (auto room : rooms)
+        {
+            if (room->getNumber() == number)
+            {
+                return !room->isOccupied();
+            }
+        }
+        return false;
+    }
+
+    Room* getRoom(int number) const
+    {
+        for (auto room : rooms)
+        {
+            if (room->getNumber() == number)
+            {
+                return room;
+            }
+        }
+        return nullptr;
+    }
+
+    bool reserveRoom(int roomNumber, Guest* guest, int duration)
+    {
+        Room* room = getRoom(roomNumber);
+        if (room == nullptr)
+        {
+            return false; // Room with given number doesn't exist
+        }
