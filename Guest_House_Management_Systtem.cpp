@@ -198,3 +198,108 @@ public:
         {
             return false; // Room with given number doesn't exist
         }
+        if (room->isOccupied())
+        {
+            return false; // Room is already occupied
+        }
+        room->occupy();
+        reservations.push_back(new Reservation(room, guest, duration));
+        return true;
+    }
+};
+
+bool login()
+{
+    string username, password;
+    cout << "Enter username: ";
+    cin >> username;
+    cout << "Enter password: ";
+    cin >> password;
+
+    if (username != USERNAME || password != PASSWORD)
+    {
+        throw runtime_error("Invalid username or password.");
+    }
+
+    return true;
+}
+
+int main()
+{
+    try
+    {
+        if (!login())
+        {
+            return 0;
+        }
+    }
+    catch (const exception& e)
+    {
+        cerr << "Error: " << e.what() << endl;
+        return 1;
+    }
+
+    GuestHouse guestHouse;
+
+    while (true)
+    {
+        cout << "Please select an option:" << endl;
+        cout << "1. Reserve a room" << endl;
+        cout << "2. View available rooms" << endl;
+        cout << "3. View reservations" << endl;
+        cout << "4. Exit" << endl;
+
+        int choice;
+        cin >> choice;
+
+        if (choice == 1)
+        {
+            cout << "Enter the room number: ";
+            int roomNumber;
+            cin >> roomNumber;
+            if (!guestHouse.isRoomAvailable(roomNumber))
+            {
+                cout << "Room not available." << endl;
+                continue;
+            }
+            cout << "Enter guest name: ";
+            string name;
+            cin >> name;
+            cout << "Enter guest age: ";
+            int age;
+            cin >> age;
+            cout << "Enter duration in days: ";
+            int duration;
+            cin >> duration;
+            Guest* guest = new Guest(name, age);
+            bool success = guestHouse.reserveRoom(roomNumber, guest, duration);
+            if (success)
+            {
+                cout << "Room reserved." << endl;
+            }
+            else
+            {
+                cout << "Reservation failed." << endl;
+                delete guest;
+            }
+        }
+        else if (choice == 2)
+        {
+            guestHouse.showRooms();
+        }
+        else if (choice == 3)
+        {
+            guestHouse.showReservations();
+        }
+        else if (choice == 4)
+        {
+            break;
+        }
+        else
+        {
+            cout << "Invalid choice." << endl;
+        }
+    }
+
+    return 0;
+}
